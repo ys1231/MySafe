@@ -61,7 +61,10 @@ public:
 	afx_msg void OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult);
 	// 模块信息
 	CListCtrl m_ModeInfo;
-
+	//清空列表
+	void Clear_m_ModeInfo();
 	// 模块详细信息
 	CListCtrl m_Mode_XiangX_Info;
+	//清空列表
+	void Clear_m_Mode_XiangX_Info();
 };

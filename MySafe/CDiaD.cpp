@@ -180,7 +180,7 @@ void CDiaD::Get_PE_InFo()
 	CString str = {};
 	for (WORD i = 0; i < nNum; i++) {
 		str.Empty();
-		
+		m_List_Quduan.DeleteAllItems();
 		for (int i = 0; l_pSec->Name[i] != '\0'; i++) {
 			str += l_pSec->Name[i];
 		}
@@ -263,7 +263,21 @@ BOOL CDiaD::Get_EXPORT_Directory()
 	return TRUE;
 }
 
-
+void CDiaD::Clear_m_ModeInfo() {
+	m_ModeInfo.DeleteAllItems();
+	int n = m_ModeInfo.GetHeaderCtrl()->GetItemCount();
+	for (int i = 0; i < n; i++) {
+		m_ModeInfo.DeleteColumn(0);
+	}
+}
+//初始化函数
+void CDiaD::Clear_m_Mode_XiangX_Info() {
+	m_Mode_XiangX_Info.DeleteAllItems();
+	int n1 = m_Mode_XiangX_Info.GetHeaderCtrl()->GetItemCount();
+	for (int i = 0; i < n1; i++) {
+		m_Mode_XiangX_Info.DeleteColumn(0);
+	}
+}
 
 //各种表的点击事件根据不同的表显示不同的信息
 void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
@@ -274,21 +288,19 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 	switch (pNMItemActivate->iItem)
 	{
 	case 0: 
+		str = L"导出表";
 		{
 		//获取到导出表在文件中的首地址
 		PIMAGE_EXPORT_DIRECTORY l_Export = (PIMAGE_EXPORT_DIRECTORY)(RVAtoFOA(m_pNt->OptionalHeader.DataDirectory[0].VirtualAddress));
 		  //初始化模块显示工作去
-			str = L"导出表";
-			m_ModeInfo.DeleteAllItems();
-			int n = m_ModeInfo.GetHeaderCtrl()->GetItemCount();
-			for (int i = 0; i < n; i++) {
-				m_ModeInfo.DeleteColumn(0);
-			}
+			
+			Clear_m_ModeInfo();
 			m_ModeInfo.InsertColumn(0, L"模块名称", LVCFMT_LEFT,100);
 			m_ModeInfo.InsertColumn(1, L"hs地址RVA", LVCFMT_LEFT, 80);
 			m_ModeInfo.InsertColumn(2, L"hs名称表RVA", LVCFMT_LEFT, 80);
 			m_ModeInfo.InsertColumn(3, L"hs序号表RVA", LVCFMT_LEFT, 80);
-
+			if (l_Export == NULL)
+				break;
 			//获取模块名称
 			wchar_t l_Name[20] = {};
 			wsprintfW(l_Name, L"%S", (char*)(RVAtoFOA(l_Export->Name)));
@@ -309,11 +321,7 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 			m_ModeInfo.SetItemText(0, 3, l_HS_XUHRVA);
 
 			//初始化模块详细信息
-			m_Mode_XiangX_Info.DeleteAllItems();
-			int n1 = m_Mode_XiangX_Info.GetHeaderCtrl()->GetItemCount();
-			for (int i = 0; i < n1; i++) {
-				m_Mode_XiangX_Info.DeleteColumn(0);
-			}   
+			Clear_m_Mode_XiangX_Info();
 			m_Mode_XiangX_Info.InsertColumn(0, L"函数地址", LVCFMT_LEFT,60);
 			m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 120);
 			m_Mode_XiangX_Info.InsertColumn(2, L"函数序号", LVCFMT_LEFT, 60);
@@ -329,7 +337,7 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 			//临时变量函数地址
 			CString l_HS_Adders = {};
 			//临时函数名称
-			wchar_t l_FunName[20] = {};
+			wchar_t l_FunName[100] = {};
 			//临时函数序号
 			CString l_Xuhao = {};
 
@@ -373,7 +381,67 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 	case 1:
 		str = L"导入表"; 
 		{
-			
+			//初始化列表
+			m_ModeInfo.DeleteAllItems();
+			Clear_m_Mode_XiangX_Info();
+
+			m_Mode_XiangX_Info.InsertColumn(0, L"导入模块", LVCFMT_LEFT, 150);
+			m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 60);
+			m_Mode_XiangX_Info.InsertColumn(2, L"函数序号", LVCFMT_LEFT, 60);
+
+			//获取导入表文件首地址
+			PIMAGE_IMPORT_DESCRIPTOR l_Import=(PIMAGE_IMPORT_DESCRIPTOR)(RVAtoFOA(m_pNt->OptionalHeader.DataDirectory[1].VirtualAddress));
+			//临时变量
+			wchar_t l_ModeName[100] = {};
+			int l_Mode_j = 0;
+			CString l_str = {};
+			while (l_Import->Name)
+			{
+				//导入模块的名称
+				memset(l_ModeName, 0, sizeof(l_ModeName));
+				wsprintfW(l_ModeName, L"%S", (char*)RVAtoFOA(l_Import->Name));
+
+				m_Mode_XiangX_Info.InsertItem(l_Mode_j, l_ModeName);
+				BOOL l_ZJ = FALSE;
+				//通过INT来遍历
+				PIMAGE_THUNK_DATA pINT =(PIMAGE_THUNK_DATA)(RVAtoFOA(l_Import->OriginalFirstThunk));
+				while (pINT->u1.AddressOfData)
+				{
+					
+					//判断到方式，如果IMAGE_THUNK_DATA最高为为1说明是序号导入
+					//否则是符号导入
+					if (l_ZJ) {
+						m_Mode_XiangX_Info.InsertItem(l_Mode_j,L"0");
+					}
+
+					if (pINT->u1.AddressOfData & 0x80000000)
+					{
+						//序号导入
+						l_str.Format(L"%d", pINT->u1.AddressOfData & 0xFFFF);
+						m_Mode_XiangX_Info.SetItemText(l_Mode_j,2,l_str);
+					}
+					else
+					{
+						PIMAGE_IMPORT_BY_NAME pName =(PIMAGE_IMPORT_BY_NAME)(RVAtoFOA(pINT->u1.AddressOfData));
+						memset(l_ModeName, 0, sizeof(l_ModeName));
+						wsprintfW(l_ModeName,L"%S", pName->Name);
+
+						m_Mode_XiangX_Info.SetItemText(l_Mode_j, 1, l_ModeName);
+
+						l_str.Empty();
+						l_str.Format(L"%d", pName->Hint);
+						m_Mode_XiangX_Info.SetItemText(l_Mode_j, 2, l_str);
+					}
+					//下一个导入函数
+					pINT++;
+					l_Mode_j++;//下一个函数名称或者序号
+					l_ZJ = TRUE;
+				}
+				//下一个导入的dll
+				l_Import++;
+				
+			}
+
 		}
 		break;
 	case 2:
