@@ -106,7 +106,7 @@ BOOL CDiaA::OnInitDialog()
 	m_ListCtrl.InsertColumn(0, L"进程ID", LVCFMT_LEFT,60);
 	m_ListCtrl.InsertColumn(1, L"进程名称", LVCFMT_LEFT,100);
 	m_ListCtrl.InsertColumn(2, L"窗口句柄", LVCFMT_LEFT,100);
-	m_ListCtrl.InsertColumn(3, L"窗口名称", LVCFMT_LEFT,150);
+	m_ListCtrl.InsertColumn(3, L"窗口名称", LVCFMT_LEFT,220);
 	m_ListCtrl.InsertColumn(4, L"窗口类名", LVCFMT_LEFT,150);
 	
 	//获取进程ID和名称

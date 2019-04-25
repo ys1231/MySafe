@@ -67,6 +67,7 @@ void CDiaD::OnDropFiles(HDROP hDropInfo)
 		MessageBox(L"打开的不是PE文件");
 		return;
 	}
+	m_List_Quduan.DeleteAllItems();
 	Get_PE_InFo();
 
 	CDialogEx::OnDropFiles(hDropInfo);
@@ -93,6 +94,7 @@ void CDiaD::OnBnClickedButton1()
 		MessageBox(L"打开的不是PE文件");
 		return;
 	}
+	m_List_Quduan.DeleteAllItems();
 	Get_PE_InFo();
 }
 
@@ -180,7 +182,7 @@ void CDiaD::Get_PE_InFo()
 	CString str = {};
 	for (WORD i = 0; i < nNum; i++) {
 		str.Empty();
-		m_List_Quduan.DeleteAllItems();
+		
 		for (int i = 0; l_pSec->Name[i] != '\0'; i++) {
 			str += l_pSec->Name[i];
 		}
@@ -227,7 +229,7 @@ BOOL CDiaD::OnInitDialog()
 	m_Directory.InsertItem(3, L"重定位表");
 	m_Directory.InsertItem(4, L"延迟加载");
 	m_Directory.InsertItem(5, L"STL表");
-
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
