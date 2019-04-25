@@ -137,8 +137,8 @@ BOOL CDiaD::IsPeFile()
 	return TRUE;
 }
 //RVA --> FOA
-DWORD CDiaD::RVAtoFOA(DWORD dwRVA)
-{
+DWORD CDiaD::RVAtoFOA(DWORD dwRVA){
+
 	//区段表首地址
 	PIMAGE_SECTION_HEADER pSec = IMAGE_FIRST_SECTION(m_pNt);
 	//区段表中的个数

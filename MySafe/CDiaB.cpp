@@ -176,7 +176,7 @@ void CDiaB::Clear_VS()
 		{
 			CString FilePathNext;
 			//CString str={};
-			FilePathNext = FilePath;
+			FilePathNext = FilePath;-
 			FilePathNext.Delete(FilePathNext.GetLength() - 1);
 			FilePathNext += w32FileData.cFileName;
 			//m_Path_Name.Format(L"查找到%s\r\n\r\n", FilePathNext);

@@ -31,6 +31,9 @@
     <Filter Include="主窗口\PE文件解析">
       <UniqueIdentifier>{baf33901-be18-4a85-8966-91a737d03d4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="主窗口\服务管理">
+      <UniqueIdentifier>{269dd7db-06a3-459a-8656-346ad72801fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MySafe.h">
@@ -66,6 +69,9 @@
     <ClInclude Include="CDiaD.h">
       <Filter>主窗口\PE文件解析</Filter>
     </ClInclude>
+    <ClInclude Include="CDiaE.h">
+      <Filter>主窗口\服务管理</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MySafe.cpp">
@@ -94,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="CDiaD.cpp">
       <Filter>主窗口\PE文件解析</Filter>
+    </ClCompile>
+    <ClCompile Include="CDiaE.cpp">
+      <Filter>主窗口\服务管理</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "CDia0.h"
 #include"CDiaD.h"
+#include"CDiaE.h"
 #pragma region
 
 #ifdef _DEBUG
@@ -125,16 +126,19 @@ BOOL CMySafeDlg::OnInitDialog()
 	m_MyTable.InsertItem(1, L"任务管理");
 	m_MyTable.InsertItem(2, L"垃圾清理");
 	m_MyTable.InsertItem(3, L"PE文件解析");
+	m_MyTable.InsertItem(4, L"服务管理");
 	//给子窗口指针赋值
 	m_MyTable.m_Dialg[0] = new CDia0();
 	m_MyTable.m_Dialg[1] = new CDiaA();
 	m_MyTable.m_Dialg[2] = new CDiaB();
 	m_MyTable.m_Dialg[3] = new CDiaD();
+	m_MyTable.m_Dialg[4] = new CDiaE();
 	//创建子窗口
 	m_MyTable.m_Dialg[0]->Create(IDD_DIALOG3, &m_MyTable);
 	m_MyTable.m_Dialg[1]->Create(IDD_DIALOG1, &m_MyTable);
 	m_MyTable.m_Dialg[2]->Create(IDD_DIALOG2, &m_MyTable);
 	m_MyTable.m_Dialg[3]->Create(IDD_DIALOG4, &m_MyTable);
+	m_MyTable.m_Dialg[4]->Create(IDD_DIALOG5, &m_MyTable);
 	//控制窗口大小
 	CRect rc;
 	m_MyTable.GetClientRect(rc);
@@ -143,11 +147,13 @@ BOOL CMySafeDlg::OnInitDialog()
 	m_MyTable.m_Dialg[1]->MoveWindow(rc);
 	m_MyTable.m_Dialg[2]->MoveWindow(rc);
 	m_MyTable.m_Dialg[3]->MoveWindow(rc);
+	m_MyTable.m_Dialg[4]->MoveWindow(rc);
 	//显示第一个 子窗口
 	m_MyTable.m_Dialg[0]->ShowWindow(SW_SHOW);
 	m_MyTable.m_Dialg[1]->ShowWindow(SW_HIDE);
 	m_MyTable.m_Dialg[2]->ShowWindow(SW_HIDE);
 	m_MyTable.m_Dialg[3]->ShowWindow(SW_HIDE);
+	m_MyTable.m_Dialg[4]->ShowWindow(SW_HIDE);
 
 
 
