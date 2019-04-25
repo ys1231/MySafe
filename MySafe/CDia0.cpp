@@ -111,7 +111,7 @@ void GetCpuUsage()
 
 	if (MyCUP > 100) return ;
 	CDia0::m_ProGres_CPU.SetPos(MyCUP);
-	CString str;
+	CString str = {};
 	str.Format(L"%d %%", MyCUP);
 	CDia0::m_Cpu.SetWindowTextW(str);
 	return;
@@ -135,7 +135,8 @@ DWORD CALLBACK ThreadProc1(LPVOID pArg)
 		DWORD dwValue = getWin_MemUsage();
 		//printf("内存使用率为 %d %% \n", dwValue);
 		CDia0::m_ProGres_Mem.SetPos(dwValue);
-		CString str;
+		CString str = {};
+		str.Empty();
 		str.Format(L"%d %%", dwValue);
 		CDia0::m_Mem.SetWindowTextW(str);
 		Sleep(1000);

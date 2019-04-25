@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 
-	//CString m_FilePath = _T("");
+	CString m_FilePath = _T("");
 	//临时存地址
 	char m_FilePathA[MAX_PATH] = {};
 	//文件缓冲区
@@ -57,4 +57,8 @@ public:
 	virtual BOOL OnInitDialog();
 	// 目录列表
 	CListCtrl m_Directory;
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult);
+	// 模块信息
+	CListCtrl m_ModeInfo;
 };
