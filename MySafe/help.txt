@@ -1,0 +1,14 @@
+vector 使用帮助
+push_back  在末尾插入
+pop_back   删除最后一个
+clear()	  清空所有元素
+使用c++新增的语义auto，与上面差不多，不过能少打几个字：
+
+复制代码
+void ShowVec(const vector<int>& valList)
+{
+    for (auto iter = valList.cbegin(); iter != valList.cend(); iter++)
+    {
+        cout << (*iter) << endl;
+    }
+}
