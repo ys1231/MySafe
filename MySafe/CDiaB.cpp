@@ -147,7 +147,7 @@ void CDiaB::Clear_file()
 	SHDeleteKey(HKEY_CURRENT_USER,
 		TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU"));
 	m_Path_Name += L"清理运行记录\r\n\r\n";
-	//清理回收站垃圾
+	// 清理 回收站 垃圾
 	SHEmptyRecycleBin(NULL, NULL,
 		SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND);
 	m_Path_Name += L"回收站已清理!\r\n";
