@@ -35,6 +35,7 @@ void CDiaD::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST1, m_List_Quduan);
 	DDX_Control(pDX, IDC_LIST2, m_Directory);
 	DDX_Control(pDX, IDC_LIST3, m_ModeInfo);
+	DDX_Control(pDX, IDC_LIST5, m_Mode_XiangX_Info);
 }
 
 
@@ -287,6 +288,7 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 			m_ModeInfo.InsertColumn(1, L"hs地址RVA", LVCFMT_LEFT, 80);
 			m_ModeInfo.InsertColumn(2, L"hs名称表RVA", LVCFMT_LEFT, 80);
 			m_ModeInfo.InsertColumn(3, L"hs序号表RVA", LVCFMT_LEFT, 80);
+
 			//获取模块名称
 			wchar_t l_Name[20] = {};
 			wsprintfW(l_Name, L"%S", (char*)(RVAtoFOA(l_Export->Name)));
@@ -306,9 +308,66 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 			l_HS_XUHRVA.Format(L"%08X", l_Export->AddressOfNameOrdinals);
 			m_ModeInfo.SetItemText(0, 3, l_HS_XUHRVA);
 
+			//初始化模块详细信息
+			m_Mode_XiangX_Info.DeleteAllItems();
+			int n1 = m_Mode_XiangX_Info.GetHeaderCtrl()->GetItemCount();
+			for (int i = 0; i < n1; i++) {
+				m_Mode_XiangX_Info.DeleteColumn(0);
+			}   
+			m_Mode_XiangX_Info.InsertColumn(0, L"函数地址", LVCFMT_LEFT,60);
+			m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 120);
+			m_Mode_XiangX_Info.InsertColumn(2, L"函数序号", LVCFMT_LEFT, 60);
+			//获取函数数量
+			DWORD l_Number = l_Export->NumberOfFunctions;
+			DWORD dwFunNameCount = l_Export->NumberOfNames;
+			//函数地址表
+			PDWORD pFunAddr = (PDWORD)(RVAtoFOA(l_Export->AddressOfFunctions));
+			//序号表
+			PWORD pFunOrdinal = (PWORD)(RVAtoFOA(l_Export->AddressOfNameOrdinals));
+			//函数名称表
+			PDWORD pFunName = (PDWORD)(RVAtoFOA(l_Export->AddressOfNames));
+			//临时变量函数地址
+			CString l_HS_Adders = {};
+			//临时函数名称
+			wchar_t l_FunName[20] = {};
+			//临时函数序号
+			CString l_Xuhao = {};
+
+			int l_i = 0;
+			for (int i = 0; i < l_Number; i++) {
+				//如果有无效地址，直接下一个
+				if (pFunAddr[i] == 0)
+					continue;
+				//获取地址
+				l_HS_Adders.Format(L"%08X", pFunAddr[i]);
+				//上传地址
+				m_Mode_XiangX_Info.InsertItem(l_i, l_HS_Adders);
+
+				//判断是否是符号导出（是否有函数名字）
+				//遍历序号表，看是否存在此序号（地址表下标 i ）
+				//bool bFalg = false; //标识默认没有名字
+				for (int j = 0; j < dwFunNameCount; j++)
+				{
+					if (i == pFunOrdinal[j])
+					{
+						//存在说明有函数名称
+						//bFalg = true;
+						DWORD dwNameAddr = pFunName[j];
+						wsprintfW(l_FunName,L"%S",(char*)RVAtoFOA(dwNameAddr));
+						//上传函数名
+						m_Mode_XiangX_Info.SetItemText(l_i, 1, l_FunName);
+
+						break;
+					}
+				}
+
+					l_Xuhao.Format(L"%d", i + l_Export->Base);
+					m_Mode_XiangX_Info.SetItemText(l_i, 2, l_Xuhao);
 			
-			
-			
+
+				l_i++;
+			}
+
 		}
 		break;
 	case 1:

@@ -160,7 +160,7 @@ void CDiaA::OnNMClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 void CDiaA::OnNMRClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-
+	//获取当前选择的行号得到PID 
 	int had = pNMItemActivate->iItem;
 	int PID = _tstoi(m_ListCtrl.GetItemText(had, 0));
 	HANDLE hProcess = OpenProcess(
