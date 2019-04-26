@@ -10,13 +10,14 @@
 #include"CDiaD.h"
 #include"CDiaE.h"
 #include"CDiaF.h"
+#include"MySock.h"
 #pragma region
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
+extern MySock g_sock;
 
 class CAboutDlg : public CDialogEx
 {
@@ -115,6 +116,10 @@ BOOL CMySafeDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	//初始化套接字
+	//g_sock.InitSock();
+
+
 	//EnableShutDownPriv();
 	//加载菜单资源
 	m_Menu.LoadMenuW(IDR_MENU1);
@@ -220,6 +225,7 @@ HCURSOR CMySafeDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
+
 
 
 

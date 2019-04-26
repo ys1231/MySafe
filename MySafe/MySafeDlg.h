@@ -40,7 +40,9 @@ public:
 	CMyTable m_MyTable;
 	//菜单资源
 	CMenu m_Menu;
-//	virtual BOOL PreTranslateMessage(MSG* pMsg);
+
+
+
 	virtual void OnOK();
 	afx_msg void MyShoutDown();
 	afx_msg void Exit_Window();

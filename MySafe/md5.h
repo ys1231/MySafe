@@ -334,7 +334,7 @@ public:
 
 	/// Load a file from disk and digest it
 	// Digests a file and returns the result.
-	char* digestFile(char *filename)
+	char* GetFilePath(char *filename)
 	{
 		Init();
 

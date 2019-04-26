@@ -25,11 +25,13 @@
 #define IDC_BUTTON2                     1016
 #define IDC_EDIT6                       1017
 #define IDC_BUTTON3                     1017
+#define IDC_BUTTON4                     1018
 #define IDC_EDIT1                       1019
 #define IDC_EDIT2                       1020
 #define IDC_EDIT5                       1021
 #define IDC_EDIT7                       1022
 #define IDC_LIST2                       1023
+#define IDC_EDIT8                       1023
 #define IDC_LIST3                       1024
 #define IDC_BNCXG                       1025
 #define IDC_LIST5                       1027

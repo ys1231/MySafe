@@ -37,6 +37,9 @@
     <Filter Include="主窗口\病毒查杀">
       <UniqueIdentifier>{06792395-8fc1-4533-8ac2-d30ecfbcefcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="主窗口\病毒查杀\服务器通讯">
+      <UniqueIdentifier>{26c5af60-ec14-4610-944f-22ec08758c21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MySafe.h">
@@ -81,6 +84,9 @@
     <ClInclude Include="CDiaF.h">
       <Filter>主窗口\病毒查杀</Filter>
     </ClInclude>
+    <ClInclude Include="MySock.h">
+      <Filter>主窗口\病毒查杀\服务器通讯</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MySafe.cpp">
@@ -115,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="CDiaF.cpp">
       <Filter>主窗口\病毒查杀</Filter>
+    </ClCompile>
+    <ClCompile Include="MySock.cpp">
+      <Filter>主窗口\病毒查杀\服务器通讯</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
