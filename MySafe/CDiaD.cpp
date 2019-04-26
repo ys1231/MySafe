@@ -62,7 +62,8 @@ void CDiaD::OnDropFiles(HDROP hDropInfo)
 		return;
 	//写处理函数
 	wsprintfA(m_FilePathA, "%S", str);
-	ReadFileToMemory();
+	if (!ReadFileToMemory())
+		return;
 	if (!IsPeFile()) {
 		MessageBox(L"打开的不是PE文件");
 		return;
@@ -99,7 +100,7 @@ void CDiaD::OnBnClickedButton1()
 }
 
 //将文件读取到内存中
-void CDiaD::ReadFileToMemory()
+BOOL CDiaD::ReadFileToMemory()
 {
 	FILE* pFile = NULL;
 
@@ -107,7 +108,7 @@ void CDiaD::ReadFileToMemory()
 	if (!pFile)
 	{
 		MessageBox(L"文件打开失败");
-		return;
+		return FALSE;
 	}
 	//获取文件大小
 	fseek(pFile, 0, SEEK_END);
@@ -118,7 +119,7 @@ void CDiaD::ReadFileToMemory()
 	fread(m_pBuf, nSize, 1, pFile);
 	//关闭文件
 	fclose(pFile);
-	return;
+	return TRUE;
 }
 //判断是否是PE文件
 BOOL CDiaD::IsPeFile()
@@ -256,12 +257,123 @@ BOOL CDiaD::Get_EXPORT_Directory() {
 		}
 	}
 
-	//计算导出表的文件偏移具体在文件中的位置
-	//PIMAGE_EXPORT_DIRECTORY l_Export = (PIMAGE_EXPORT_DIRECTORY)RVAtoFOA(l_Directoty->VirtualAddress);
-	//获取模块名
-	//char*pModeName =(char*)RVAtoFOA(l_Export->Name);
-
 	return TRUE;
+}
+//资源表
+void CDiaD::GetResourceTable()
+{
+	//定义一个名称数组
+	static wchar_t* szResName[17] =
+
+	{ 0, L"鼠标指针",L"位图", L"图标",L"菜单", L"对话框", L"字符串列表",
+		L"字体目录", L"字体", L"快捷键", L"非格式化资源", L"消息列表",
+		L"鼠标指针组", L"zz", L"图标组", L"xx", L"版本信息"
+	};
+	//找到资源位置，数据目录表的第三项（下标2）
+	m_pNt->OptionalHeader.DataDirectory[2];
+
+	//计算资源表的文件偏移FOA
+	DWORD dwResFOA = RVAtoFOA(m_pNt->OptionalHeader.DataDirectory[2].VirtualAddress);
+	//具体在文件中的位置
+	PIMAGE_RESOURCE_DIRECTORY pResRoot =(PIMAGE_RESOURCE_DIRECTORY)(dwResFOA);
+
+	//第一层，资源的种类
+
+	//数量
+	DWORD dwCount1 = pResRoot->NumberOfIdEntries +pResRoot->NumberOfNamedEntries;
+
+	PIMAGE_RESOURCE_DIRECTORY_ENTRY pEntry1 =(PIMAGE_RESOURCE_DIRECTORY_ENTRY)(pResRoot + 1);
+
+	int l_i = 0;
+
+	for (int i1 = 0; i1 < dwCount1; i1++)
+	{
+		//判断资源命名方式（pEntry1->NameIsString为1说明是字符串命名，否则是数字命名）
+		if (pEntry1->NameIsString)
+		{
+			PIMAGE_RESOURCE_DIR_STRING_U pName =(PIMAGE_RESOURCE_DIR_STRING_U)(pEntry1->NameOffset + (DWORD)pResRoot);
+			WCHAR* pNameBuf = new WCHAR[pName->Length + 1]{};
+			memcpy(pNameBuf, pName->NameString, pName->Length * 2);
+			//printf("------资源种类：%S------\n", pNameBuf);
+
+			delete[] pNameBuf;
+		}
+		else
+		{
+			//printf("-------资源种类：%d-------- \n", );
+			//UpdateData(FALSE);
+			if (pEntry1->Id > 17) {
+				m_Mode_XiangX_Info.InsertItem(l_i, L"其他");
+			}else
+			m_Mode_XiangX_Info.InsertItem(l_i, szResName[pEntry1->Id]);
+			
+			l_i++;
+			
+		}
+		//判断是否有下一层(pEntry1->DataIsDirectory为1说明有下一层)
+		if (pEntry1->DataIsDirectory)
+		{
+			//第二层（某种资源的个数）
+			PIMAGE_RESOURCE_DIRECTORY pRes2 =(PIMAGE_RESOURCE_DIRECTORY)(pEntry1->OffsetToDirectory + (DWORD)pResRoot);
+			
+			DWORD dwCount2 = pRes2->NumberOfIdEntries +pRes2->NumberOfNamedEntries;
+
+			PIMAGE_RESOURCE_DIRECTORY_ENTRY pEntry2 =
+				(PIMAGE_RESOURCE_DIRECTORY_ENTRY)(pRes2 + 1);
+			for (int i2 = 0; i2 < dwCount2; i2++)
+			{
+				//某种资源的每一个资源的名字
+				//比如第一种资源叫PNG，那么这里遍历的就是
+				//PNG这种资源的每一个
+				//判断资源命名方式（pEntry1->NameIsString为1说明是字符串命名，否则是数字命名）
+				if (pEntry2->NameIsString)
+				{
+					PIMAGE_RESOURCE_DIR_STRING_U pName =
+						(PIMAGE_RESOURCE_DIR_STRING_U)
+						(pEntry2->NameOffset + (DWORD)pResRoot);
+					WCHAR* pNameBuf = new WCHAR[pName->Length + 1]{};
+					memcpy(pNameBuf, pName->NameString, pName->Length * 2);
+					printf("------第二层资源名：%S------", pNameBuf);
+					delete[] pNameBuf;
+				}
+				else
+				{
+					printf("-------第二层资源名：%d-------- ", pEntry2->Id);
+				}
+				//判断是否有下一层（第三层）
+				if (pEntry2->DataIsDirectory)
+				{
+					PIMAGE_RESOURCE_DIRECTORY pRes3 =
+						(PIMAGE_RESOURCE_DIRECTORY)
+						(pEntry2->OffsetToDirectory + (DWORD)pResRoot);
+					//第三层此值就是1
+					DWORD dwCount3 = pRes3->NumberOfIdEntries +
+						pRes3->NumberOfNamedEntries;
+
+					PIMAGE_RESOURCE_DIRECTORY_ENTRY pEntry3 =
+						(PIMAGE_RESOURCE_DIRECTORY_ENTRY)(pRes3 + 1);
+
+					PIMAGE_RESOURCE_DATA_ENTRY pData =
+						(PIMAGE_RESOURCE_DATA_ENTRY)
+						(pEntry3->OffsetToData + (DWORD)pResRoot);
+
+					char* pDataBuf = (char*)RVAtoFOA(pData->OffsetToData);
+
+					for (int i = 0; i < 10; i++)
+					{
+						printf("%02X ", (unsigned char)pDataBuf[i]);
+					}
+					printf("\n");
+				}
+
+				//某种类的下一个
+				pEntry2++;
+			}//第二层
+
+		}
+		//下一个种类
+		pEntry1++;
+	}//第一层
 }
 
 void CDiaD::Clear_m_ModeInfo() {
@@ -388,7 +500,7 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 			Clear_m_Mode_XiangX_Info();
 
 			m_Mode_XiangX_Info.InsertColumn(0, L"导入模块", LVCFMT_LEFT, 150);
-			m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 60);
+			m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 100);
 			m_Mode_XiangX_Info.InsertColumn(2, L"函数序号", LVCFMT_LEFT, 60);
 
 			//获取导入表文件首地址
@@ -432,6 +544,7 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 
 						l_str.Empty();
 						l_str.Format(L"%d", pName->Hint);
+
 						m_Mode_XiangX_Info.SetItemText(l_Mode_j, 2, l_str);
 					}
 					//下一个导入函数
@@ -449,119 +562,104 @@ void CDiaD::OnNMClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 	case 2:
 		str = L"资源表";
 		{
+			m_ModeInfo.DeleteAllItems();
+			Clear_m_Mode_XiangX_Info();
 
+			m_Mode_XiangX_Info.InsertColumn(0, L"资源类型", LVCFMT_LEFT, 60);
+			//m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 60);
+			//m_Mode_XiangX_Info.InsertColumn(2, L"函数序号", LVCFMT_LEFT, 60);
+
+			GetResourceTable();
+		}
+		break;
+	case 3:
+		str = L"重定位表";
+		{
 			//初始化列表
 			m_ModeInfo.DeleteAllItems();
 			Clear_m_Mode_XiangX_Info();
 
-			m_Mode_XiangX_Info.InsertColumn(0, L"导入模块", LVCFMT_LEFT, 150);
-			m_Mode_XiangX_Info.InsertColumn(1, L"函数名称", LVCFMT_LEFT, 60);
-			m_Mode_XiangX_Info.InsertColumn(2, L"函数序号", LVCFMT_LEFT, 60);
-
-			//资源表地址//具体在文件中的位置
-			PIMAGE_RESOURCE_DIRECTORY pResRoot = (PIMAGE_RESOURCE_DIRECTORY)(RVAtoFOA(m_pNt->OptionalHeader.DataDirectory[0].VirtualAddress));
-
-			//第一层，资源的种类
-			DWORD dwCount1 = pResRoot->NumberOfIdEntries +
-				pResRoot->NumberOfNamedEntries;
-
-			PIMAGE_RESOURCE_DIRECTORY_ENTRY pEntry1 =
-				(PIMAGE_RESOURCE_DIRECTORY_ENTRY)(pResRoot + 1);
-			for (int i1 = 0; i1 < dwCount1; i1++)
+			m_Mode_XiangX_Info.InsertColumn(0, L"当前重定位页RVA", LVCFMT_LEFT,80);
+			m_Mode_XiangX_Info.InsertColumn(1, L"第几个", LVCFMT_LEFT,80);
+			m_Mode_XiangX_Info.InsertColumn(2, L"这页中RVA", LVCFMT_LEFT, 100);
+			m_Mode_XiangX_Info.InsertColumn(3, L"需要定位的VA", LVCFMT_LEFT, 100);
+			//m_Mode_XiangX_Info.InsertColumn(4, L"需要定位的数据", LVCFMT_LEFT, 60);
+			//找到重定位表位置，数据目录表的第6项（下标5）
+			
+			typedef struct _OFFSET_TYPE
 			{
-				//判断资源命名方式（pEntry1->NameIsString为1说明是字符串命名，否则是数字命名）
-				if (pEntry1->NameIsString)
+				WORD offset : 12; //本页的偏移量
+				WORD type : 4;    //重定位类型（3）
+			}OFFSET_TYPE, *POFFSET_TYPE;
+			//重定位表RVA
+			DWORD dwRelocRVA = m_pNt->OptionalHeader.DataDirectory[5].VirtualAddress;
+			//是否为空
+			if (!dwRelocRVA)
+			{
+
+				MessageBox( L"没有重定位表", L"提示");
+				return;
+			}
+			//重定位表在文件中的地址
+			PIMAGE_BASE_RELOCATION pReloc = (PIMAGE_BASE_RELOCATION)(RVAtoFOA(dwRelocRVA));
+
+			//临时变量
+			int l_i = 0;
+			BOOL TIAOJIAN = FALSE;
+			//循环重定位表
+			//如果SizeOfBlock为0，说明没有需要重定位的数据了
+			while (pReloc->SizeOfBlock)
+			{
+				//当前重定位页RVA
+				//UpdateData(TRUE);
+				CString strReloc = {};
+				strReloc.Format(L"%08X", pReloc->VirtualAddress);
+				m_Mode_XiangX_Info.InsertItem(l_i, strReloc);
+				TIAOJIAN = FALSE;
+				//这一页一共有多少个重定位块（即多少个需要重定位的数据）
+				DWORD dwCount = (pReloc->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(WORD);
+				//指向重定位块地址
+				POFFSET_TYPE pOffset = (POFFSET_TYPE)(pReloc + 1);
+				//遍历每一个重定位块
+				for (int i = 0; i < dwCount; i++)
 				{
-					PIMAGE_RESOURCE_DIR_STRING_U pName =
-						(PIMAGE_RESOURCE_DIR_STRING_U)
-						(pEntry1->NameOffset + (DWORD)pResRoot);
-					WCHAR* pNameBuf = new WCHAR[pName->Length + 1]{};
-					memcpy(pNameBuf, pName->NameString, pName->Length * 2);
-					printf("------资源种类：%S------\n", pNameBuf);
-					delete[] pNameBuf;
+					if(TIAOJIAN)
+					m_Mode_XiangX_Info.InsertItem(l_i,L"");
+					//在这一页中的位置地址RVA
+					DWORD dwRelocDataRVA = pReloc->VirtualAddress + pOffset->offset;
+					//转成FOA
+					DWORD dwRelocDataFOA = (DWORD)(RVAtoFOA(dwRelocDataRVA));
+					//实际需要重定位的数据地址是个VA
+					DWORD dwRealDataVA = *(DWORD*)dwRelocDataFOA;
+					//转成RVA，得到FOA
+					DWORD dwRealDataRVA = dwRealDataVA - m_pNt->OptionalHeader.ImageBase;
+					//DWORD dwRealDataFOA = (DWORD)(RVAtoFOA(dwRealDataRVA));
+					//需要重定位的具体数据（字节数不确定）
+					//DWORD dwData = *(DWORD*)dwRealDataFOA;
+					CString str = {};
+					str.Empty();
+					str.Format(L"第%d个数据", i + 1);
+					m_Mode_XiangX_Info.SetItemText(l_i, 1, str);
+					/*m_MyEdit += strData;  
+					m_MyEdit += L"\r\n";*/
+					str.Empty(); str.Format(L"RVA:%08X", dwRelocDataRVA);
+					m_Mode_XiangX_Info.SetItemText(l_i, 2, str);
+
+					str.Empty(); str.Format(L"VA:%08X", dwRealDataVA);
+					m_Mode_XiangX_Info.SetItemText(l_i, 3, str);
+
+					//str.Empty(); str.Format(L"data:%08X", dwData);
+					//m_Mode_XiangX_Info.SetItemText(l_i, 4, str);
+					l_i++;
+					//下一个重定位数据位置
+					pOffset++;
+					TIAOJIAN = TRUE;
 				}
-				else
-				{
-					printf("-------资源种类：%d-------- \n", pEntry1->Id);
-				}
-				//判断是否有下一层(pEntry1->DataIsDirectory为1说明有下一层)
-				if (pEntry1->DataIsDirectory)
-				{
-					//第二层（某种资源的个数）
-					PIMAGE_RESOURCE_DIRECTORY pRes2 =
-						(PIMAGE_RESOURCE_DIRECTORY)
-						(pEntry1->OffsetToDirectory + (DWORD)pResRoot);
-					DWORD dwCount2 = pRes2->NumberOfIdEntries +
-						pRes2->NumberOfNamedEntries;
-
-					PIMAGE_RESOURCE_DIRECTORY_ENTRY pEntry2 =
-						(PIMAGE_RESOURCE_DIRECTORY_ENTRY)(pRes2 + 1);
-					for (int i2 = 0; i2 < dwCount2; i2++)
-					{
-						//某种资源的每一个资源的名字
-						//比如第一种资源叫PNG，那么这里遍历的就是
-						//PNG这种资源的每一个
-						//判断资源命名方式（pEntry1->NameIsString为1说明是字符串命名，否则是数字命名）
-						if (pEntry2->NameIsString)
-						{
-							PIMAGE_RESOURCE_DIR_STRING_U pName =
-								(PIMAGE_RESOURCE_DIR_STRING_U)
-								(pEntry2->NameOffset + (DWORD)pResRoot);
-							WCHAR* pNameBuf = new WCHAR[pName->Length + 1]{};
-							memcpy(pNameBuf, pName->NameString, pName->Length * 2);
-							printf("------第二层资源名：%S------", pNameBuf);
-							delete[] pNameBuf;
-						}
-						else
-						{
-							printf("-------第二层资源名：%d-------- ", pEntry2->Id);
-						}
-						//判断是否有下一层（第三层）
-						if (pEntry2->DataIsDirectory)
-						{
-							PIMAGE_RESOURCE_DIRECTORY pRes3 =
-								(PIMAGE_RESOURCE_DIRECTORY)
-								(pEntry2->OffsetToDirectory + (DWORD)pResRoot);
-							//第三层此值就是1
-							DWORD dwCount3 = pRes3->NumberOfIdEntries +
-								pRes3->NumberOfNamedEntries;
-
-							PIMAGE_RESOURCE_DIRECTORY_ENTRY pEntry3 =
-								(PIMAGE_RESOURCE_DIRECTORY_ENTRY)(pRes3 + 1);
-
-							PIMAGE_RESOURCE_DATA_ENTRY pData =
-								(PIMAGE_RESOURCE_DATA_ENTRY)
-								(pEntry3->OffsetToData + (DWORD)pResRoot);
-
-							char* pDataBuf = RVAtoFOA(pData->OffsetToData, pBuf) + pBuf;
-							//输出资源二进制数据
-		// 					for (int i = 0; i < pData->Size;i++)
-		// 					{
-		// 						printf("%02X ", pDataBuf[i]);
-		// 					}
-							printf("\t");
-							for (int i = 0; i < 10; i++)
-							{
-								printf("%02X ", (unsigned char)pDataBuf[i]);
-							}
-							printf("\n");
-						}
-
-						//某种类的下一个
-						pEntry2++;
-					}//第二层
-
-				}
-				//下一个种类
-				pEntry1++;
-			}//第一层
-
-
+				//下一页
+				pReloc =
+					(PIMAGE_BASE_RELOCATION)(pReloc->SizeOfBlock + (DWORD)pReloc);
+			}
 		}
-
-		break;
-	case 3:
-		str = L"重定位表";
 		break;
 	case 4:
 		str = L"延迟加载表";

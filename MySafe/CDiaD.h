@@ -31,7 +31,7 @@ public:
 	PIMAGE_NT_HEADERS m_pNt = NULL;
 
 	//将文件读取到内存中
-	void ReadFileToMemory();
+	BOOL ReadFileToMemory();
 	//判断是否是PE文件
 	BOOL IsPeFile();
 	//RVA --> FOA
@@ -40,7 +40,9 @@ public:
 	void Get_PE_InFo();
 	//获取导出表信息
 	BOOL Get_EXPORT_Directory();
-	////动态显示是什么表
+	//z资源表信息
+	void  GetResourceTable();
+
 	//CString m_Show_IDC_GEZB;
 
 	afx_msg void OnDropFiles(HDROP hDropInfo);
