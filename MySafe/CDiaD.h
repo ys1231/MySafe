@@ -41,7 +41,7 @@ public:
 	//获取导出表信息
 	BOOL Get_EXPORT_Directory();
 	//z资源表信息
-	void  GetResourceTable();
+	void  ShowResourceInfo();
 
 	//CString m_Show_IDC_GEZB;
 

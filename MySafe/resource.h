@@ -14,6 +14,7 @@
 #define IDR_MENU1                       140
 #define IDD_DIALOG4                     141
 #define IDD_DIALOG5                     143
+#define IDD_DIALOG6                     146
 #define IDC_MYTAB                       1000
 #define IDC_LIST1                       1002
 #define IDC_PROGRESS1                   1005
@@ -43,7 +44,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_RESOURCE_VALUE        148
 #define _APS_NEXT_COMMAND_VALUE         32780
 #define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           101

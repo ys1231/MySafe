@@ -72,6 +72,9 @@
     <ClInclude Include="CDiaE.h">
       <Filter>主窗口\服务管理</Filter>
     </ClInclude>
+    <ClInclude Include="CDiaF.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MySafe.cpp">
@@ -103,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="CDiaE.cpp">
       <Filter>主窗口\服务管理</Filter>
+    </ClCompile>
+    <ClCompile Include="CDiaF.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -188,6 +188,7 @@
     <ClInclude Include="CDiaB.h" />
     <ClInclude Include="CDiaD.h" />
     <ClInclude Include="CDiaE.h" />
+    <ClInclude Include="CDiaF.h" />
     <ClInclude Include="CMyTable.h" />
     <ClInclude Include="CMyThread.h" />
     <ClInclude Include="MySafe.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="CDiaB.cpp" />
     <ClCompile Include="CDiaD.cpp" />
     <ClCompile Include="CDiaE.cpp" />
+    <ClCompile Include="CDiaF.cpp" />
     <ClCompile Include="CMyTable.cpp" />
     <ClCompile Include="CMyThread.cpp" />
     <ClCompile Include="MySafe.cpp" />
