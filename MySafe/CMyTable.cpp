@@ -44,6 +44,7 @@ void CMyTable::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 		m_Dialg[2]->ShowWindow(SW_HIDE);
 		m_Dialg[3]->ShowWindow(SW_HIDE);
 		m_Dialg[4]->ShowWindow(SW_HIDE);
+		m_Dialg[5]->ShowWindow(SW_HIDE);
 		break;
 	case 1:
 		m_Dialg[0]->ShowWindow(SW_HIDE);
@@ -51,6 +52,7 @@ void CMyTable::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 		m_Dialg[2]->ShowWindow(SW_HIDE);
 		m_Dialg[3]->ShowWindow(SW_HIDE);
 		m_Dialg[4]->ShowWindow(SW_HIDE);
+		m_Dialg[5]->ShowWindow(SW_HIDE);
 		break;
 	case 2:
 		m_Dialg[0]->ShowWindow(SW_HIDE);
@@ -58,6 +60,7 @@ void CMyTable::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 		m_Dialg[2]->ShowWindow(SW_SHOW);
 		m_Dialg[3]->ShowWindow(SW_HIDE);
 		m_Dialg[4]->ShowWindow(SW_HIDE);
+		m_Dialg[5]->ShowWindow(SW_HIDE);
 		break;
 	case 3:
 		m_Dialg[0]->ShowWindow(SW_HIDE);
@@ -65,6 +68,7 @@ void CMyTable::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 		m_Dialg[2]->ShowWindow(SW_HIDE);
 		m_Dialg[3]->ShowWindow(SW_SHOW);
 		m_Dialg[4]->ShowWindow(SW_HIDE);
+		m_Dialg[5]->ShowWindow(SW_HIDE);
 		break;
 	case 4:
 		m_Dialg[0]->ShowWindow(SW_HIDE);
@@ -72,6 +76,15 @@ void CMyTable::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 		m_Dialg[2]->ShowWindow(SW_HIDE);
 		m_Dialg[3]->ShowWindow(SW_HIDE);
 		m_Dialg[4]->ShowWindow(SW_SHOW);
+		m_Dialg[5]->ShowWindow(SW_HIDE);
+		break;
+	case 5:
+		m_Dialg[0]->ShowWindow(SW_HIDE);
+		m_Dialg[1]->ShowWindow(SW_HIDE);
+		m_Dialg[2]->ShowWindow(SW_HIDE);
+		m_Dialg[3]->ShowWindow(SW_HIDE);
+		m_Dialg[4]->ShowWindow(SW_HIDE);
+		m_Dialg[5]->ShowWindow(SW_SHOW);
 		break;
 	default:
 		break;

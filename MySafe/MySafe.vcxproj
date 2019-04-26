@@ -191,6 +191,7 @@
     <ClInclude Include="CDiaF.h" />
     <ClInclude Include="CMyTable.h" />
     <ClInclude Include="CMyThread.h" />
+    <ClInclude Include="md5.h" />
     <ClInclude Include="MySafe.h" />
     <ClInclude Include="MySafeDlg.h" />
     <ClInclude Include="Resource.h" />

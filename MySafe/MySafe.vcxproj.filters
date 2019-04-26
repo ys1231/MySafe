@@ -34,6 +34,9 @@
     <Filter Include="主窗口\服务管理">
       <UniqueIdentifier>{269dd7db-06a3-459a-8656-346ad72801fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="主窗口\病毒查杀">
+      <UniqueIdentifier>{06792395-8fc1-4533-8ac2-d30ecfbcefcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MySafe.h">
@@ -72,8 +75,11 @@
     <ClInclude Include="CDiaE.h">
       <Filter>主窗口\服务管理</Filter>
     </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>主窗口\病毒查杀</Filter>
+    </ClInclude>
     <ClInclude Include="CDiaF.h">
-      <Filter>头文件</Filter>
+      <Filter>主窗口\病毒查杀</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +114,7 @@
       <Filter>主窗口\服务管理</Filter>
     </ClCompile>
     <ClCompile Include="CDiaF.cpp">
-      <Filter>源文件</Filter>
+      <Filter>主窗口\病毒查杀</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
